@@ -1,33 +1,34 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
     <link rel="stylesheet" href="./Assets/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div id="start"> START QUIZ! </div>
-
-    <div id="quiz" style="display:none;">
-        <div id="qImage"> <img src="https://img.favpng.com/17/18/15/web-development-html-css3-canvas-element-web-design-png-favpng-fuTCdugCT7a78ZwT8hhzDWezb.jpg"> </div>
-        <div id="question"> <p> Question </p> </div>
+    <div id="container">
+        <div id="start">Start Quiz!</div>
+        <div id="quiz" style="display: none">
+            <div id="question"></div>
+            <div id="qImg"></div>
+            <div id="choices">
+                <div class="choice" id="A" onclick="checkAnswer('A')"></div>
+                <div class="choice" id="B" onclick="checkAnswer('B')"></div>
+                <div class="choice" id="C" onclick="checkAnswer('C')"></div>
+            </div>
             <div id="timer">
-                <div id="counter"> 6 </div>
+                <div id="counter"></div>
                 <div id="btimeGauge"></div>
                 <div id="timeGauge"></div>
             </div>
-            <div id="choices">
-                <div class="choice" id="A" onclick="checkAnswer('A')">A</div>
-                <div class="choice" id="B" onclick="checkAnswer('B')">B</div>
-                <div class="choice" id="C" onclick="checkAnswer('C')">C</div>
-            </div>
-        <div id="progress"> <div class="prog"></div>
+            <div id="progress"></div>
+        </div>
+        <div id="scoreContainer" style="display: none"></div>
     </div>
-
-    <div id="scoreContainer" style="display:none;">
-        <img src="https://lh3.googleusercontent.com/proxy/p5by4iI4V9Ljp5omXXvtxl6xe59PJV9wna_NA1pGUIJJ08-0BUzIsoOHAmTDV7U0b793hhDMUwwjMQ2n0okXuKj1ywd6GqjnumVXsQ" alt="Happy Face">
-        <p> 90% </p>
-    </div>
-
     <script src="./Assets/script.js"></script>
 </body>
 
