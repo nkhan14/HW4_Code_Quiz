@@ -1,160 +1,143 @@
-// select all elements
-const start = document.getElementById("start");
-const quiz = document.getElementById("quiz");
-const question = document.getElementById("question");
-const qImg = document.getElementById("qImg");
-const choiceA = document.getElementById("A");
-const choiceB = document.getElementById("B");
-const choiceC = document.getElementById("C");
-const counter = document.getElementById("counter");
-const timeGauge = document.getElementById("timeGauge");
-const progress = document.getElementById("progress");
-const scoreDiv = document.getElementById("scoreContainer");
-
-// create our questions
-let questions = [
+var quizQuestions = document.getElementById("quiz-questions");
+var timer = document.getElementById("timer");
+var btnStart = document.getElementById("btn-start");
+var timecounter = document.getElementById("timecounter");
+var titleitem = document.getElementById("title-item");
+var nextQuestions;
+var questionanswers = document.getElementById("question-answers");
+var myScore = document.getElementById("score");
+var btnScore = document.getElementById("btnScore");
+var currentindex = 0;
+var score = 0;
+var count = 75;
+var alert = document.getElementById("alert");
+var info = document.getElementById("info");
+// var addscore = document.getElementById("addscore");
+// var submitresult = document.getElementById("submitresult");
+var allScores = [];
+var storedScores = JSON.parse(localStorage.getItem("userData"));
+var questions = [
   {
-    question: "What does HTML stand for?",
-    imgSrc: "./img/html.png",
-    choiceA: "Hyper Text MarkUp Languange",
-    choiceB: "Hyperlink Text MarkUp Language",
-    choiceC: "Hyper Tool MarkUp Language",
-    correct: "A",
+    title: "Commonly used data type Do Not include:---",
+    choices: ["strings", "booleance", "alerts", "numbers"],
+    answer: "alerts",
   },
   {
-    question: "What does CSS stand for?",
-    imgSrc: "./img/css.png",
-    choiceA: "Color Style Sheets",
-    choiceB: "Cascading Style Sheets",
-    choiceC: "Code Styling Sheets",
-    correct: "B",
+    title: "The condition in an if/else statement is enclosed within:---",
+    choices: ["quotes", "Curly brackets", "parentheses", "square brackets"],
+    answer: "parentheses",
   },
   {
-    question: "What does JS stand for?",
-    imgSrc: "./img/js.png",
-    choiceA: "JavaSeudo",
-    choiceB: "JavaScore",
-    choiceC: "JavaScript",
-    correct: "C",
+    title: "Arrays in JavaScript can be used to store:---",
+    choices: [
+      "numbers and strings",
+      "others Arrays",
+      "booleances",
+      "all of the above",
+    ],
+    answer: "all of the above",
+  },
+  {
+    title:
+      "String values must be enclosed within --- when being assigned to variables ",
+    choices: ["commas", "curly brackets", "quotes", "parentheses"],
+    answer: "quotes",
+  },
+  {
+    title:
+      "A very useful tool used during development and debugging for printing content to the debugger is:---",
+    choices: ["JavaScript", "terminal/bash", "alerts", "console.log"],
+    answer: "console.log",
   },
 ];
-
-// create some variables
-
-const lastQuestion = questions.length - 1;
-let runningQuestion = 0;
-let count = 0;
-const questionTime = 10; // 10s
-const gaugeWidth = 150; // 150px
-const gaugeUnit = gaugeWidth / questionTime;
-let TIMER;
-let score = 0;
-
-// render a question
-function renderQuestion() {
-  let q = questions[runningQuestion];
-
-  question.innerHTML = "<p>" + q.question + "</p>";
-  qImg.innerHTML = "<img src=" + q.imgSrc + ">";
-  choiceA.innerHTML = q.choiceA;
-  choiceB.innerHTML = q.choiceB;
-  choiceC.innerHTML = q.choiceC;
-}
-
-start.addEventListener("click", startQuiz);
-
-// start quiz
-function startQuiz() {
-  start.style.display = "none";
-  renderQuestion();
-  quiz.style.display = "block";
-  renderProgress();
-  renderCounter();
-  TIMER = setInterval(renderCounter, 1000); // 1000ms = 1s
-}
-
-// render progress
-function renderProgress() {
-  for (let qIndex = 0; qIndex <= lastQuestion; qIndex++) {
-    progress.innerHTML += "<div class='prog' id=" + qIndex + "></div>";
+btnStart.addEventListener("click", starQuiz);
+function starQuiz() {
+  if (storedScores !== null) {
+    allScores = storedScores;
   }
+  info.classList.add("d-none");
+  btnStart.classList.add("d-none");
+  timecounter.classList.remove("d-none");
+  quizQuestions.classList.remove("d-none");
+  nextQuestions = questions[currentindex];
+  console.log(nextQuestions.title);
+
+  displayQuestion(nextQuestions);
+
+  gametime();
+}
+btnScore.addEventListener("click", function () {
+  let name = document.getElementById("inputScore").value;
+  scorePage(name, count);
+});
+// Time set
+
+function gametime() {
+  var timeinterval = setInterval(function () {
+    timer.innerText = count;
+    count--;
+  }, 1000);
 }
 
-// counter render
+function scorePage(a, b) {
+  var userData = {
+    inits: a,
+    userScore: b,
+  };
+  allScores.push(userData);
 
-function renderCounter() {
-  if (count <= questionTime) {
-    counter.innerHTML = count;
-    timeGauge.style.width = count * gaugeUnit + "px";
-    count++;
-  } else {
-    count = 0;
-    // change progress color to red
-    answerIsWrong();
-    if (runningQuestion < lastQuestion) {
-      runningQuestion++;
-      renderQuestion();
+  localStorage.setItem("userData", JSON.stringify(allScores));
+  location.href = "score.html";
+}
+
+function displayQuestion(question) {
+  titleitem.innerText = question.title;
+  question.choices.forEach((element) => {
+    var button = document.createElement("button");
+    button.className = "btn-primary btn-block text-left";
+    button.innerText = element;
+    // questionanswers.innerHTML=""
+    questionanswers.appendChild(button);
+    button.addEventListener("click", displaynextQuestion);
+  });
+}
+
+function displaynextQuestion(e) {
+  currentindex++;
+  if (currentindex < questions.length) {
+    correction(e.target.innerText == nextQuestions.answer);
+    questionanswers.innerHTML = "";
+    if (currentindex < questions.length) {
+      nextQuestions = questions[currentindex];
+      displayQuestion(nextQuestions);
     } else {
-      // end the quiz and show the score
-      clearInterval(TIMER);
-      scoreRender();
+      currentindex = 0;
+      displayQuestion(nextQuestions);
     }
-  }
-}
-
-// checkAnwer
-
-function checkAnswer(answer) {
-  if (answer == questions[runningQuestion].correct) {
-    // answer is correct
-    score++;
-    // change progress color to green
-    answerIsCorrect();
   } else {
-    // answer is wrong
-    // change progress color to red
-    answerIsWrong();
+    console.log("endgame");
+    endgame();
   }
-  count = 0;
-  if (runningQuestion < lastQuestion) {
-    runningQuestion++;
-    renderQuestion();
+}
+function correction(response) {
+  if (response) {
+    alert.innerText = "Good";
+    console.log("Good");
   } else {
-    // end the quiz and show the score
-    clearInterval(TIMER);
-    scoreRender();
+    alert.innerText = "Wrong";
+    count = count - 15;
+    timer.innerHTML = count;
+    console.log("Wrong");
   }
+  setTimeout(function () {
+    alert.innerText = "";
+  }, 1000);
 }
-
-// answer is correct
-function answerIsCorrect() {
-  document.getElementById(runningQuestion).style.backgroundColor = "#0f0";
-}
-
-// answer is Wrong
-function answerIsWrong() {
-  document.getElementById(runningQuestion).style.backgroundColor = "#f00";
-}
-
-// score render
-function scoreRender() {
-  scoreDiv.style.display = "block";
-
-  // calculate the amount of question percent answered by the user
-  const scorePerCent = Math.round((100 * score) / questions.length);
-
-  // choose the image based on the scorePerCent
-  let img =
-    scorePerCent >= 80
-      ? "./img/5.png"
-      : scorePerCent >= 60
-      ? "./img/4.png"
-      : scorePerCent >= 40
-      ? "./img/3.png"
-      : scorePerCent >= 20
-      ? "./img/2.png"
-      : "./img/1.png";
-
-  scoreDiv.innerHTML = "<img src=" + img + ">";
-  scoreDiv.innerHTML += "<p>" + scorePerCent + "%</p>";
+function endgame() {
+  // btnStart.classList.add("d-none")
+  myScore.innaText = count;
+  addscore.classList.remove("d-none");
+  timecounter.classList.add("d-none");
+  quizQuestions.classList.add("d-none");
+  addscore.classList.remove("d-none");
 };
